@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
 import api from '../../services/api';
 import Container from '../../components/Container';
-import { Form, SubmitButton, List } from './styles';
+import { Form, SubmitButton, List, Input } from './styles';
 
 export default class Main extends Component {
   state = {
     newRepo: '',
     repositories: [],
     loading: false,
+    notFound: false,
   };
 
   // Carregar dados do localStorage
@@ -34,25 +35,36 @@ export default class Main extends Component {
 
   handleSubmit = async e => {
     e.preventDefault();
-
-    this.setState({ loading: true });
-
     const { newRepo, repositories } = this.state;
-    const response = await api.get(`/repos/${newRepo}`);
+    try {
+      this.setState({ loading: true });
 
-    const data = {
-      name: response.data.full_name,
-    };
+      const repoExists = repositories.filter(repo => repo.name === newRepo);
+      if (repoExists) {
+        throw new Error('Repositório duplicado'); // Não aceita nada digitado
+      }
 
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: false,
-    });
+      const response = await api.get(`/repos/${newRepo}`);
+
+      const data = {
+        name: response.data.full_name,
+      };
+
+      this.setState({
+        repositories: [...repositories, data],
+        newRepo: '',
+        loading: false,
+      });
+    } catch (error) {
+      this.setState({
+        notFound: true,
+        loading: false,
+      });
+    }
   };
 
   render() {
-    const { newRepo, repositories, loading } = this.state;
+    const { newRepo, repositories, loading, notFound } = this.state;
 
     return (
       <Container>
@@ -62,7 +74,8 @@ export default class Main extends Component {
         </h1>
 
         <Form onSubmit={this.handleSubmit}>
-          <input
+          <Input
+            notFound={notFound}
             type="text"
             placeholder="Adicionar repositório"
             value={newRepo}
