@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from 'react-icons/fa';
+import {
+  FaArrowAltCircleLeft,
+  FaArrowAltCircleRight,
+  FaSpinner,
+} from 'react-icons/fa';
 import api from '../../services/api';
 import Container from '../../components/Container';
 import {
@@ -13,6 +17,7 @@ import {
   PagesContainer,
   PButton,
   NButton,
+  PageNumber,
 } from './styles';
 
 export default class Repository extends Component {
@@ -29,6 +34,10 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
+    loadingP: false,
+    loadingN: false,
+    loadingF: false,
+    loadingS: false,
     filter: 'all',
     page: 1,
   };
@@ -61,6 +70,19 @@ export default class Repository extends Component {
     const { filter, repository, page } = this.state;
 
     if (prevState.filter !== filter || prevState.page !== page) {
+      if (prevState.page > page) {
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState({ loadingP: true, loadingS: true });
+      } else if (prevState.page < page) {
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState({ loadingN: true, loadingS: true });
+      }
+
+      if (prevState.filter !== filter) {
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState({ loadingF: true, loadingS: true, page: 1 });
+      }
+
       const [repo, issues] = await Promise.all([
         api.get(`/repos/${repository.full_name}`),
         api.get(`/repos/${repository.full_name}/issues?page=${page}`, {
@@ -75,8 +97,11 @@ export default class Repository extends Component {
         repository: repo.data,
         issues: issues.data,
         loading: false,
+        loadingP: false,
+        loadingN: false,
+        loadingF: false,
+        loadingS: false,
         filter,
-        page,
       });
     }
   }
@@ -104,10 +129,23 @@ export default class Repository extends Component {
   };
 
   render() {
-    const { repository, issues, loading, page } = this.state;
+    const {
+      repository,
+      issues,
+      loading,
+      page,
+      loadingP,
+      loadingN,
+      loadingF,
+      loadingS,
+    } = this.state;
 
     if (loading) {
-      return <Loading>Carregando...</Loading>;
+      return (
+        <Loading loading={loading ? 1 : 0}>
+          <FaSpinner />
+        </Loading>
+      );
     }
 
     return (
@@ -121,7 +159,7 @@ export default class Repository extends Component {
 
         <Issues>
           <h1>Issues</h1>
-          <Filter onChange={this.handleInputChange}>
+          <Filter onChange={this.handleInputChange} loadingF={loadingF ? 1 : 0}>
             <option value="all">Todos</option>
             <option value="open">Abertos</option>
             <option value="closed">Fechados</option>
@@ -149,11 +187,13 @@ export default class Repository extends Component {
           <PButton
             onClick={this.handlePrevButton}
             firstPage={page <= 1 ? 1 : 0}
+            loadingP={loadingP ? 1 : 0}
           >
-            <FaArrowAltCircleLeft />
+            {loadingP ? <FaSpinner /> : <FaArrowAltCircleLeft />}
           </PButton>
-          <NButton onClick={this.handleNextButton}>
-            <FaArrowAltCircleRight />
+          <PageNumber loadingS={loadingS ? 1 : 0}>Página: {page}</PageNumber>
+          <NButton onClick={this.handleNextButton} loadingN={loadingN ? 1 : 0}>
+            {loadingN ? <FaSpinner /> : <FaArrowAltCircleRight />}
           </NButton>
         </PagesContainer>
       </Container>

@@ -1,13 +1,33 @@
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
 
 export const Loading = styled.div`
   color: #fff;
-  font-size: 30px;
-  font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+
+  svg {
+    width: 150px;
+    height: 150px;
+  }
+
+  ${props =>
+    props.loading &&
+    css`
+      svg {
+        animation: ${rotate} 2s linear infinite;
+      }
+    `}
 `;
 
 export const Owner = styled.header`
@@ -61,7 +81,9 @@ export const Issues = styled.div`
   }
 `;
 
-export const Filter = styled.select`
+export const Filter = styled.select.attrs(props => ({
+  disabled: props.loadingF,
+}))`
   margin-left: 15px;
   width: 200px;
   background: #7159c1;
@@ -71,6 +93,11 @@ export const Filter = styled.select`
   font-size: 14px;
   font-weight: bold;
   color: #fff;
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 `;
 
 export const IssueList = styled.ul`
@@ -142,6 +169,17 @@ export const PagesContainer = styled.div`
   justify-content: space-between;
 `;
 
+export const PageNumber = styled.span.attrs(props => ({
+  disabled: props.loadingS,
+}))`
+  font-weight: bold;
+  color: #7159c1;
+
+  &[disabled] {
+    color: #ccc;
+  }
+`;
+
 export const PButton = styled.button.attrs(props => ({
   type: 'button',
   disabled: props.firstPage,
@@ -166,6 +204,14 @@ export const PButton = styled.button.attrs(props => ({
     cursor: not-allowed;
     opacity: 0.6;
   }
+
+  ${props =>
+    props.loadingP &&
+    css`
+      svg {
+        animation: ${rotate} 2s linear infinite;
+      }
+    `}
 `;
 
 export const NButton = styled.button`
@@ -185,8 +231,11 @@ export const NButton = styled.button`
     height: 25px;
   }
 
-  &[disabled] {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
+  ${props =>
+    props.loadingN &&
+    css`
+      svg {
+        animation: ${rotate} 2s linear infinite;
+      }
+    `}
 `;
