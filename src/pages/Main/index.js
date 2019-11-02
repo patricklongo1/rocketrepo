@@ -39,8 +39,10 @@ export default class Main extends Component {
     try {
       this.setState({ loading: true });
 
-      const repoExists = repositories.filter(repo => repo.name === newRepo);
-      if (repoExists) {
+      const repoExists = repositories.filter(
+        repo => repo.name.toLowerCase() === newRepo.toLowerCase()
+      );
+      if (repoExists.length >= 1) {
         throw new Error('Repositório duplicado'); // Não aceita nada digitado
       }
 
@@ -54,6 +56,7 @@ export default class Main extends Component {
         repositories: [...repositories, data],
         newRepo: '',
         loading: false,
+        notFound: false,
       });
     } catch (error) {
       this.setState({

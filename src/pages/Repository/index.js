@@ -1,9 +1,19 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from 'react-icons/fa';
 import api from '../../services/api';
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList } from './styles';
+import {
+  Loading,
+  Owner,
+  IssueList,
+  Filter,
+  Issues,
+  PagesContainer,
+  PButton,
+  NButton,
+} from './styles';
 
 export default class Repository extends Component {
   // eslint-disable-next-line react/static-property-placement
@@ -19,18 +29,21 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
+    filter: 'all',
+    page: 1,
   };
 
   async componentDidMount() {
     const { match } = this.props;
     const repoName = decodeURIComponent(match.params.repo);
+    const { filter, page } = this.state;
 
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
-      api.get(`/repos/${repoName}/issues`, {
+      api.get(`/repos/${repoName}/issues?page=${page}`, {
         params: {
-          state: 'open',
-          per_page: 5,
+          state: filter,
+          page,
         },
       }),
     ]);
@@ -39,11 +52,59 @@ export default class Repository extends Component {
       repository: repository.data,
       issues: issues.data,
       loading: false,
+      filter,
+      page,
     });
   }
 
+  async componentDidUpdate(_, prevState) {
+    const { filter, repository, page } = this.state;
+
+    if (prevState.filter !== filter || prevState.page !== page) {
+      const [repo, issues] = await Promise.all([
+        api.get(`/repos/${repository.full_name}`),
+        api.get(`/repos/${repository.full_name}/issues?page=${page}`, {
+          params: {
+            state: filter,
+          },
+        }),
+      ]);
+
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({
+        repository: repo.data,
+        issues: issues.data,
+        loading: false,
+        filter,
+        page,
+      });
+    }
+  }
+
+  handleInputChange = e => {
+    this.setState({ filter: e.target.value });
+  };
+
+  handlePrevButton = () => {
+    let { page } = this.state;
+    if (page > 1) {
+      page -= 1;
+    }
+    this.setState({
+      page,
+    });
+  };
+
+  handleNextButton = () => {
+    let { page } = this.state;
+    page += 1;
+    this.setState({
+      page,
+    });
+  };
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, page } = this.state;
 
     if (loading) {
       return <Loading>Carregando...</Loading>;
@@ -57,6 +118,15 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
+
+        <Issues>
+          <h1>Issues</h1>
+          <Filter onChange={this.handleInputChange}>
+            <option value="all">Todos</option>
+            <option value="open">Abertos</option>
+            <option value="closed">Fechados</option>
+          </Filter>
+        </Issues>
 
         <IssueList>
           {issues.map(issue => (
@@ -74,6 +144,18 @@ export default class Repository extends Component {
             </li>
           ))}
         </IssueList>
+
+        <PagesContainer>
+          <PButton
+            onClick={this.handlePrevButton}
+            firstPage={page <= 1 ? 1 : 0}
+          >
+            <FaArrowAltCircleLeft />
+          </PButton>
+          <NButton onClick={this.handleNextButton}>
+            <FaArrowAltCircleRight />
+          </NButton>
+        </PagesContainer>
       </Container>
     );
   }

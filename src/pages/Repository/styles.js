@@ -46,9 +46,36 @@ export const Owner = styled.header`
   }
 `;
 
+export const Issues = styled.div`
+  max-width: 700px;
+  border-top: 1px solid #666;
+  padding: 20px 0 0 15px;
+  margin: 30px 45px auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  h1 {
+    font-size: 24px;
+    color: #7159c1;
+  }
+`;
+
+export const Filter = styled.select`
+  margin-left: 15px;
+  width: 200px;
+  background: #7159c1;
+  border: 0;
+  border-radius: 4px;
+  padding: 5px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+`;
+
 export const IssueList = styled.ul`
-  padding-top: 30px;
-  margin-top: 30px;
+  padding-top: 10px;
+  margin-top: 0px;
   border-top: 1px solid #eee;
   list-style: none;
 
@@ -59,7 +86,7 @@ export const IssueList = styled.ul`
     border-radius: 4px;
 
     & + li {
-      margin-top: 10px;
+      padding-top: 10px;
     }
 
     img {
@@ -103,5 +130,63 @@ export const IssueList = styled.ul`
         color: #999;
       }
     }
+  }
+`;
+
+export const PagesContainer = styled.div`
+  max-width: 700px;
+  margin-top: 15px;
+  padding: 0 35px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const PButton = styled.button.attrs(props => ({
+  type: 'button',
+  disabled: props.firstPage,
+}))`
+  border: 0;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #7159c1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    color: #fff;
+    width: 25px;
+    height: 25px;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`;
+
+export const NButton = styled.button`
+  border: 0;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #7159c1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    color: #fff;
+    width: 25px;
+    height: 25px;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 `;
