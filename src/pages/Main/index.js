@@ -43,7 +43,7 @@ export default class Main extends Component {
         repo => repo.name.toLowerCase() === newRepo.toLowerCase()
       );
       if (repoExists.length >= 1) {
-        throw new Error('Repositório duplicado'); // Não aceita nada digitado
+        throw new Error('Repositório duplicado');
       }
 
       const response = await api.get(`/repos/${newRepo}`);
@@ -59,6 +59,7 @@ export default class Main extends Component {
         notFound: false,
       });
     } catch (error) {
+      alert.useAlert(error);
       this.setState({
         notFound: true,
         loading: false,

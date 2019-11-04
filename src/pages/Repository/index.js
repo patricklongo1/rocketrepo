@@ -11,9 +11,10 @@ import Container from '../../components/Container';
 import {
   Loading,
   Owner,
+  Issues,
   IssueList,
   Filter,
-  Issues,
+  IssuesControl,
   PagesContainer,
   PButton,
   NButton,
@@ -157,45 +158,61 @@ export default class Repository extends Component {
           <p>{repository.description}</p>
         </Owner>
 
-        <Issues>
-          <h1>Issues</h1>
-          <Filter onChange={this.handleInputChange} loadingF={loadingF ? 1 : 0}>
-            <option value="all">Todos</option>
-            <option value="open">Abertos</option>
-            <option value="closed">Fechados</option>
-          </Filter>
-        </Issues>
+        {issues.length <= 0 ? (
+          <Issues>
+            <p>Sem issues para este repositório.</p>
+          </Issues>
+        ) : (
+          <Issues>
+            <IssuesControl>
+              <h1>Issues</h1>
+              <Filter
+                onChange={this.handleInputChange}
+                loadingF={loadingF ? 1 : 0}
+              >
+                <option value="all">Todos</option>
+                <option value="open">Abertos</option>
+                <option value="closed">Fechados</option>
+              </Filter>
+            </IssuesControl>
 
-        <IssueList>
-          {issues.map(issue => (
-            <li key={String(issue.id)}>
-              <img src={issue.user.avatar_url} alt={issue.user.login} />
-              <div>
-                <strong>
-                  <a href={issue.html_url}>{issue.title}</a>
-                  {issue.labels.map(label => (
-                    <span key={String(label.id)}>{label.name}</span>
-                  ))}
-                </strong>
-                <p>{issue.user.login}</p>
-              </div>
-            </li>
-          ))}
-        </IssueList>
+            <IssueList>
+              {issues.map(issue => (
+                <li key={String(issue.id)}>
+                  <img src={issue.user.avatar_url} alt={issue.user.login} />
+                  <div>
+                    <strong>
+                      <a href={issue.html_url}>{issue.title}</a>
+                      {issue.labels.map(label => (
+                        <span key={String(label.id)}>{label.name}</span>
+                      ))}
+                    </strong>
+                    <p>{issue.user.login}</p>
+                  </div>
+                </li>
+              ))}
+            </IssueList>
 
-        <PagesContainer>
-          <PButton
-            onClick={this.handlePrevButton}
-            firstPage={page <= 1 ? 1 : 0}
-            loadingP={loadingP ? 1 : 0}
-          >
-            {loadingP ? <FaSpinner /> : <FaArrowAltCircleLeft />}
-          </PButton>
-          <PageNumber loadingS={loadingS ? 1 : 0}>Página: {page}</PageNumber>
-          <NButton onClick={this.handleNextButton} loadingN={loadingN ? 1 : 0}>
-            {loadingN ? <FaSpinner /> : <FaArrowAltCircleRight />}
-          </NButton>
-        </PagesContainer>
+            <PagesContainer>
+              <PButton
+                onClick={this.handlePrevButton}
+                firstPage={page <= 1 ? 1 : 0}
+                loadingP={loadingP ? 1 : 0}
+              >
+                {loadingP ? <FaSpinner /> : <FaArrowAltCircleLeft />}
+              </PButton>
+              <PageNumber loadingS={loadingS ? 1 : 0}>
+                Página: {page}
+              </PageNumber>
+              <NButton
+                onClick={this.handleNextButton}
+                loadingN={loadingN ? 1 : 0}
+              >
+                {loadingN ? <FaSpinner /> : <FaArrowAltCircleRight />}
+              </NButton>
+            </PagesContainer>
+          </Issues>
+        )}
       </Container>
     );
   }

@@ -67,6 +67,19 @@ export const Owner = styled.header`
 `;
 
 export const Issues = styled.div`
+  margin-top: 10px;
+  border: 0;
+  border-radius: 4px;
+
+  p {
+    color: #7159c1;
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 145px;
+  }
+`;
+
+export const IssuesControl = styled.div`
   max-width: 700px;
   border-top: 1px solid #666;
   padding: 20px 0 0 15px;
@@ -137,21 +150,21 @@ export const IssueList = styled.ul`
           &:hover {
             color: #7159c1;
           }
-
-          span {
-            background: #eee;
-            color: #333;
-            border-radius: 2px;
-            font-size: 12px;
-            font-weight: 600;
-            height: 20px;
-            padding: 3px 4px;
-            margin-left: 10px;
-          }
+        }
+        span {
+          background: #90ee90;
+          color: #333;
+          border-radius: 2px;
+          font-size: 12px;
+          font-weight: 600;
+          height: 20px;
+          padding: 3px 4px;
+          margin-left: 10px;
         }
       }
 
       p {
+        margin-left: 5px;
         margin-top: 5px;
         font-size: 12px;
         color: #999;
